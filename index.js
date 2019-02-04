@@ -40,6 +40,7 @@ export default class SafeAreaView<T: *> extends React.Component<Props<T>, State>
     }
 
     _onLayout() {
+        if (Platform.OS !== 'android') return;
         this._el?.measure( (fx, fy, width, height, px, py) => {
             RNCSafeAreaView.getPadding()
                 .then(size => {
