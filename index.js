@@ -15,14 +15,14 @@ import {
     Platform,
     SafeAreaView as RNSafeArea,
     NativeModules,
-    Dimensions
+    Dimensions, StatusBar
 } from 'react-native';
 import type { ViewStyleProp } from 'react-native/Libraries/StyleSheet/StyleSheet';
+import {SAProps} from "react-native-ccs-safeareaview";
 
 const { RNCSafeAreaView } = NativeModules;
 
-type Props<T> = ViewProps & {
-};
+type Props<T> = SAProps & { };
 
 type State = {|
 |};
@@ -64,14 +64,24 @@ export default class SafeAreaView<T: *> extends React.Component<Props<T>, State>
     }
 
     componentDidMount(): void {
-        RNCSafeAreaView.getTintLight().then(e => {
-            this._beforeTintLight = e;
-            RNCSafeAreaView.setTintLight(this.props.tintLight);
-        })
+        if (Platform.OS == 'android') {
+            RNCSafeAreaView.getTintLight().then(e => {
+                this._beforeTintLight = e;
+                RNCSafeAreaView.setTintLight(this.props.tintLight);
+            });
+        }
+        else {
+            StatusBar.setBarStyle(this.props.tintLight ? "light-content" : "dark-content", true);
+        }
     }
 
     componentWillUnmount(): void {
-        RNCSafeAreaView.setTintLight(this._beforeTintLight);
+        if (Platform.OS == 'android') {
+            RNCSafeAreaView.setTintLight(this._beforeTintLight);
+        }
+        else {
+            StatusBar.setBarStyle(this._beforeTintLight ? "light-content" : "dark-content", true);
+        }
     }
 
     shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
