@@ -3,6 +3,7 @@ package cc.creamcookie.safeareaview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.util.DisplayMetrics;
@@ -41,10 +42,27 @@ public class RNCSafeAreaViewModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getPadding(Promise promise) {
+
         try {
+            final Window w = mActivity.getWindow();
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean isPhone = (reactContext.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) < Configuration.SCREENLAYOUT_SIZE_LARGE;
+                    int _o = reactContext.getResources().getConfiguration().orientation;
+                    if (_o == Configuration.ORIENTATION_LANDSCAPE && isPhone) {
+                        w.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        w.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                    } else {
+                        w.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                        w.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                    }
+                }
+            });
+
+
             WritableMap map = Arguments.createMap();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                Window w = mActivity.getWindow();
                 WindowInsets insets = w.getDecorView().getRootWindowInsets();
                 map.putDouble("top", this.pxToDp(insets.getStableInsetTop()));
                 map.putDouble("left", this.pxToDp(insets.getStableInsetLeft()));
