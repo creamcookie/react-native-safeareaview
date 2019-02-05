@@ -27,7 +27,7 @@ type Props<T> = ViewProps & {
 type State = {|
 |};
 
-const dim = Dimensions.get("window");
+const dim = Dimensions.get("screen");
 
 export default class SafeAreaView<T: *> extends React.Component<Props<T>, State> {
 
@@ -47,8 +47,8 @@ export default class SafeAreaView<T: *> extends React.Component<Props<T>, State>
                     let applySize = {};
                     applySize.top = (fy == 0 && py == fy) ? size.top : 0;
                     applySize.left = (fx == 0 && px == fx) ? size.left : 0;
-                    applySize.right = (dim.width - 3 <= (px + width)) ? size.right : 0;
-                    applySize.bottom = (dim.height - 3 <= (py + height)) ? size.bottom : 0;
+                    applySize.right = (dim.width - 1 <= (px + width)) ? size.right : 0;
+                    applySize.bottom = (dim.height - 1 <= (py + height)) ? size.bottom : 0;
                     this.setState({ applySize });
                 })
                 .catch(e => {
