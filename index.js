@@ -31,9 +31,14 @@ const dim = Dimensions.get("screen");
 
 export default class SafeAreaView<T: *> extends React.Component<Props<T>, State> {
 
-    static propTypes = { };
+    static propTypes = {
+    };
 
-    static defaultProps = { };
+    static defaultProps = {
+        tintLight: false,
+    };
+
+    _beforeTintLight = false;
 
     constructor(props: P, context: any) {
         super(props, context);
@@ -56,6 +61,23 @@ export default class SafeAreaView<T: *> extends React.Component<Props<T>, State>
                 })
 
         });
+    }
+
+    componentDidMount(): void {
+        RNCSafeAreaView.getTintLight().then(e => {
+            this._beforeTintLight = e;
+            RNCSafeAreaView.setTintLight(this.props.tintLight);
+        })
+    }
+
+    componentWillUnmount(): void {
+        RNCSafeAreaView.setTintLight(this._beforeTintLight);
+    }
+
+    shouldComponentUpdate(nextProps: Readonly<P>, nextState: Readonly<S>, nextContext: any): boolean {
+        if (this.props.tintLight != nextProps.tintLight) {
+            RNCSafeAreaView.setTintLight(nextProps.tintLight);
+        }
     }
 
     render() {
